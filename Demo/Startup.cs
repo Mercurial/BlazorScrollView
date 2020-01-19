@@ -11,7 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using BlazorScrollView.Demo.Data;
 
-namespace BlazorScrollView.Demo 
+namespace BlazorScrollView.Demo
 {
     public class Startup
     {
