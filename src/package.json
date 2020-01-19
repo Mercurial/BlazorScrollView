@@ -1,0 +1,17 @@
+{
+  "name": "src",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc --build && parcel build ./wwwroot/styles/scrollview.scss --target browser --no-source-maps --bundle-node-modules --out-dir ./wwwroot/dist/styles"
+  },
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@babel/core": "^7.7.2",
+    "parcel-bundler": "^1.12.4",
+    "sass": "^1.23.7",
+    "typescript": "^3.7.5"
+  }
+}
