@@ -13,7 +13,7 @@ namespace BlazorScrollView {
 
             scrollHandleContainerElement.appendChild(scrollHandleElement);
             scrollContainer.appendChild(scrollHandleContainerElement);
-
+            scrollContainer.addEventListener("wheel", ScrollViewInterop.HandleWheel);
             ScrollViewInterop.SetScrollHandleHeight(scrollContainer);
             ScrollViewInterop.InitializeGlobalHandlers();
         }
@@ -28,7 +28,7 @@ namespace BlazorScrollView {
         }
 
         private static HandleMouseDown(e: MouseEvent) {
-            var target = e.target as HTMLDivElement;
+            let target = e.target as HTMLDivElement;
 
             if (target.classList.contains("handle")) {
                 e.preventDefault();
@@ -45,26 +45,31 @@ namespace BlazorScrollView {
                 e.preventDefault();
                 e.stopImmediatePropagation();
                 e.stopPropagation();
-                var handle = ScrollViewInterop.CurrentHandleElement;
-                var startY = ScrollViewInterop.CurrentHandleY;
-                var displacement = e.clientY - startY;
-                var scrollContainer = handle.parentElement?.parentElement as HTMLDivElement;
-                var handleContainer = handle.parentElement as HTMLDivElement;
-                let vars = ScrollViewInterop.ExtractVariables(scrollContainer);
 
-                scrollContainer.scrollTop += displacement * (vars[1] / vars[0]);
-
-                var handleY = parseFloat(window.getComputedStyle(handle, null).top);
-                var handleH = parseFloat(window.getComputedStyle(handle, null).height);
-                var newHandleY = handleY + displacement;
-
-                newHandleY = newHandleY <= 0 ? 0 : newHandleY;
-                newHandleY = newHandleY >= vars[0] - handleH ? vars[0] - handleH : newHandleY;
-
-                handleContainer.style.top = `${scrollContainer.scrollTop}px`;
-                handle.style.top = `${newHandleY}px`;
+                let startY = ScrollViewInterop.CurrentHandleY;
+                let displacement = e.clientY - startY;
+                ScrollViewInterop.DoScroll(displacement);
                 ScrollViewInterop.CurrentHandleY = e.clientY;
             }
+        }
+
+        private static DoScroll(displacement: number) {
+            let handle = ScrollViewInterop.CurrentHandleElement as HTMLDivElement;
+            let handleContainer = handle.parentElement as HTMLDivElement;
+            let scrollContainer = handleContainer.parentElement as HTMLDivElement;
+            let vars = ScrollViewInterop.ExtractVariables(scrollContainer);
+
+            scrollContainer.scrollTop += displacement * (vars[1] / vars[0]);
+
+            let handleY = parseFloat(window.getComputedStyle(handle, null).top);
+            let handleH = parseFloat(window.getComputedStyle(handle, null).height);
+            let newHandleY = handleY + displacement;
+
+            newHandleY = newHandleY <= 0 ? 0 : newHandleY;
+            newHandleY = newHandleY >= vars[0] - handleH ? vars[0] - handleH : newHandleY;
+
+            handleContainer.style.top = `${scrollContainer.scrollTop}px`;
+            handle.style.top = `${newHandleY}px`;
         }
 
         private static HandleMouseUp(e: MouseEvent) {
@@ -76,12 +81,22 @@ namespace BlazorScrollView {
             }
         }
 
+        private static HandleWheel(e: WheelEvent) {
+            var scrollContainer = e.currentTarget as HTMLDivElement;
+            ScrollViewInterop.CurrentHandleElement = scrollContainer.querySelector(".handle");
+            var delta = Math.max(-3, Math.min(3, e.deltaY || -e.detail));
+            console.log(delta);
+            ScrollViewInterop.DoScroll(delta);
+            ScrollViewInterop.CurrentHandleElement = null;
+            return false;
+        }
+
         private static SetScrollHandleHeight(scrollContainer: HTMLDivElement) {
             let vars = ScrollViewInterop.ExtractVariables(scrollContainer);
             let hv = vars[0];
             let ht = vars[1];
             let hh = ScrollViewInterop.GetScrollHandleHeight(hv, hv, ht);
-            var handle = scrollContainer.querySelector(".handle") as HTMLDivElement;
+            let handle = scrollContainer.querySelector(".handle") as HTMLDivElement;
             handle.style.height = `${hh}px`;
         }
 

@@ -50,8 +50,8 @@
         "signature": "3e0a459888f32b42138d5a39f706ff2d55d500ab1031e0988b5568b0f67c2303"
       },
       "./scripts/scrollview.ts": {
-        "version": "dfe3fabbae99405cafadac9f3c11b3612162b6c269ef5671b9a490d98be8927d",
-        "signature": "752cf689c3827799c82894a45c9ac9998d26f31ee3951dcaf54ed5bed5edb79c"
+        "version": "529003f288ff7ba8adf225233009bebaae26de74457e032ce8ce1942c9d40442",
+        "signature": "15810dfe54a1085fc14b6f10595c75e8a79fc926b1eb19ba985e87f8ed232267"
       },
       "../node_modules/@types/q/index.d.ts": {
         "version": "57427a9a368f8f0ee4ce03c36a762e19166756b95ab688948b29be553b24a78a",
