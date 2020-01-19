@@ -15,6 +15,9 @@ var BlazorScrollView;
             ScrollViewInterop.SetScrollHandleHeight(scrollContainer);
             ScrollViewInterop.InitializeGlobalHandlers();
         };
+        ScrollViewInterop.UnInitializeScrollView = function (scrollContainer) {
+            scrollContainer.removeEventListener("wheel", ScrollViewInterop.HandleWheel);
+        };
         ScrollViewInterop.InitializeGlobalHandlers = function () {
             if (!ScrollViewInterop.IsGlobalHandlersInitialized) {
                 ScrollViewInterop.IsGlobalHandlersInitialized = true;

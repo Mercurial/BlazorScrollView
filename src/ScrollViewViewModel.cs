@@ -5,7 +5,7 @@ using Microsoft.JSInterop;
 
 namespace BlazorScrollView
 {
-    public class ScrollViewViewModel : ComponentBase
+    public class ScrollViewViewModel : ComponentBase, IDisposable
     {
         #region Dependency Injection
         [Inject]
@@ -38,5 +38,9 @@ namespace BlazorScrollView
             await base.OnAfterRenderAsync(firstRender);
         }
 
+        public void Dispose()
+        {
+            JSRuntime.InvokeVoidAsync("BlazorScrollView.ScrollViewInterop.UnInitializeScrollView", ScrollViewContainerRef);
+        }
     }
 }

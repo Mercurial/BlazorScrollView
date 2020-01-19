@@ -18,6 +18,10 @@ namespace BlazorScrollView {
             ScrollViewInterop.InitializeGlobalHandlers();
         }
 
+        public static UnInitializeScrollView(scrollContainer: HTMLDivElement): void {
+            scrollContainer.removeEventListener("wheel", ScrollViewInterop.HandleWheel);
+        }
+
         private static InitializeGlobalHandlers() {
             if (!ScrollViewInterop.IsGlobalHandlersInitialized) {
                 ScrollViewInterop.IsGlobalHandlersInitialized = true;
