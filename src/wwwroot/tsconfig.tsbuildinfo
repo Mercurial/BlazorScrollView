@@ -50,7 +50,7 @@
         "signature": "3e0a459888f32b42138d5a39f706ff2d55d500ab1031e0988b5568b0f67c2303"
       },
       "./scripts/scrollview.ts": {
-        "version": "9dcb854140902a9d3a7f3b47f2c9977b0ff19850a8dab1593cb80bd403de36a7",
+        "version": "ea637dcae38164576fc8f610c683012f59a97dba5bfdd0f808a7ac03aa227951",
         "signature": "131cc0ceb6169f67d2d4e5d41ebead6c694e941a0e1138a18b0561b6bc4202d9"
       },
       "../node_modules/@types/q/index.d.ts": {
@@ -75,8 +75,6 @@
     "referencedMap": {},
     "exportedModulesMap": {},
     "semanticDiagnosticsPerFile": [
-      "./scripts/scrollview.ts",
-      "../node_modules/@types/q/index.d.ts",
       "../node_modules/typescript/lib/lib.es5.d.ts",
       "../node_modules/typescript/lib/lib.es2015.d.ts",
       "../node_modules/typescript/lib/lib.dom.d.ts",
@@ -88,7 +86,9 @@
       "../node_modules/typescript/lib/lib.es2015.proxy.d.ts",
       "../node_modules/typescript/lib/lib.es2015.reflect.d.ts",
       "../node_modules/typescript/lib/lib.es2015.symbol.d.ts",
-      "../node_modules/typescript/lib/lib.es2015.symbol.wellknown.d.ts"
+      "../node_modules/typescript/lib/lib.es2015.symbol.wellknown.d.ts",
+      "../node_modules/@types/q/index.d.ts",
+      "./scripts/scrollview.ts"
     ]
   },
   "version": "3.7.5"

@@ -89,7 +89,6 @@ namespace BlazorScrollView {
             var scrollContainer = e.currentTarget as HTMLDivElement;
             ScrollViewInterop.CurrentHandleElement = scrollContainer.querySelector(".handle");
             var delta = Math.max(-3, Math.min(3, e.deltaY || -e.detail));
-            console.log(delta);
             ScrollViewInterop.DoScroll(delta);
             ScrollViewInterop.CurrentHandleElement = null;
             return false;
