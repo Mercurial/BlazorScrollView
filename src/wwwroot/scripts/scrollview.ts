@@ -14,12 +14,17 @@ namespace BlazorScrollView {
             scrollHandleContainerElement.appendChild(scrollHandleElement);
             scrollContainer.appendChild(scrollHandleContainerElement);
             scrollContainer.addEventListener("wheel", ScrollViewInterop.HandleWheel);
+            scrollContainer.addEventListener("mouseenter", ScrollViewInterop.OnScrollContainerMouseEnter);
+            scrollContainer.addEventListener("mouseleave", ScrollViewInterop.OnScrollContainerMouseLeave);
+
             ScrollViewInterop.SetScrollHandleHeight(scrollContainer);
             ScrollViewInterop.InitializeGlobalHandlers();
         }
 
         public static UnInitializeScrollView(scrollContainer: HTMLDivElement): void {
             scrollContainer.removeEventListener("wheel", ScrollViewInterop.HandleWheel);
+            scrollContainer.removeEventListener("mouseenter", ScrollViewInterop.OnScrollContainerMouseEnter);
+            scrollContainer.removeEventListener("mouseleave", ScrollViewInterop.OnScrollContainerMouseLeave);
         }
 
         private static InitializeGlobalHandlers() {
@@ -31,6 +36,15 @@ namespace BlazorScrollView {
             }
         }
 
+        private static OnScrollContainerMouseEnter(e: MouseEvent) {
+            var target = e.currentTarget as HTMLDivElement;
+            target.classList.add("active");
+        }
+        private static OnScrollContainerMouseLeave(e: MouseEvent) {
+            var target = e.currentTarget as HTMLDivElement;
+            target.classList.remove("active");
+        }
+
         private static HandleMouseDown(e: MouseEvent) {
             let target = e.target as HTMLDivElement;
 
@@ -38,6 +52,10 @@ namespace BlazorScrollView {
                 e.preventDefault();
                 e.stopImmediatePropagation();
                 e.stopPropagation();
+
+                var scrollContainer = target.parentElement?.parentElement;
+                if (!scrollContainer?.classList.contains("active"))
+                    scrollContainer?.classList.add("active");
 
                 ScrollViewInterop.CurrentHandleElement = target;
                 ScrollViewInterop.CurrentHandleY = e.clientY;
@@ -49,6 +67,10 @@ namespace BlazorScrollView {
                 e.preventDefault();
                 e.stopImmediatePropagation();
                 e.stopPropagation();
+
+                var scrollContainer = ScrollViewInterop.CurrentHandleElement.parentElement?.parentElement;
+                if (!scrollContainer?.classList.contains("active"))
+                    scrollContainer?.classList.add("active");
 
                 let startY = ScrollViewInterop.CurrentHandleY;
                 let displacement = e.clientY - startY;
@@ -81,6 +103,11 @@ namespace BlazorScrollView {
                 e.preventDefault();
                 e.stopImmediatePropagation();
                 e.stopPropagation();
+
+                var scrollContainer = ScrollViewInterop.CurrentHandleElement.parentElement?.parentElement;
+                if (scrollContainer?.classList.contains("active"))
+                    scrollContainer?.classList.remove("active");
+
                 ScrollViewInterop.CurrentHandleElement = null;
             }
         }
@@ -98,7 +125,8 @@ namespace BlazorScrollView {
             let vars = ScrollViewInterop.ExtractVariables(scrollContainer);
             let hv = vars[0];
             let ht = vars[1];
-            let hh = ScrollViewInterop.GetScrollHandleHeight(hv, hv, ht);
+            let hs = vars[2];
+            let hh = ScrollViewInterop.GetScrollHandleHeight(hv, hs, ht);
             let handle = scrollContainer.querySelector(".handle") as HTMLDivElement;
             handle.style.height = `${hh}px`;
         }
@@ -109,8 +137,9 @@ namespace BlazorScrollView {
 
         private static ExtractVariables(scrollContainer: HTMLDivElement) {
             let hv = parseFloat(window.getComputedStyle(scrollContainer, null).height);
+            let hs = parseFloat(window.getComputedStyle(scrollContainer.querySelector(".handle-container") as HTMLDivElement, null).height);
             let ht = scrollContainer.scrollHeight;
-            return [hv, ht];
+            return [hv, ht, hs];
         }
     }
 }

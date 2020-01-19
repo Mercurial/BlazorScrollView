@@ -7,19 +7,28 @@
   .handle-container {
     position: absolute;
     right: 1px;
-		top: 1px;
-		height: 100%;
-		width: 10px;
+    top: 1px;
+    height: 100%;
+    width: 10px;
+		transition: opacity 500ms;
+		opacity: 0;
+		background-color: #8080806b;
 
     .handle {
       position: absolute;
       right: 0px;
       top: 0px;
-			width: 100%;
-			height: 100%;
+      width: 100%;
+      height: 100%;
       outline: 1px solid black;
       cursor: pointer;
       background-color: rgba(0, 0, 0, 0.5);
     }
+  }
+}
+
+.blazor-scrollview.active {
+  .handle-container {
+    opacity: 1;
   }
 }
