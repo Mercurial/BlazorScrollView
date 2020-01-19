@@ -4,13 +4,22 @@
   overflow: hidden;
   position: relative;
 
-  .handle {
+  .handle-container {
     position: absolute;
     right: 1px;
-    width: 4px;
-    outline: 1px solid black;
-    top: 1px;
-    cursor: pointer;
-    background-color: rgba(0,0,0, 0.5);
+		top: 1px;
+		height: 100%;
+		width: 10px;
+
+    .handle {
+      position: absolute;
+      right: 0px;
+      top: 0px;
+			width: 100%;
+			height: 100%;
+      outline: 1px solid black;
+      cursor: pointer;
+      background-color: rgba(0, 0, 0, 0.5);
+    }
   }
 }
