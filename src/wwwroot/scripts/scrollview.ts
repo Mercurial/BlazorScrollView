@@ -114,6 +114,10 @@ namespace BlazorScrollView {
 
         private static HandleWheel(e: WheelEvent) {
             var scrollContainer = e.currentTarget as HTMLDivElement;
+
+            if (!scrollContainer?.classList.contains("active"))
+                scrollContainer?.classList.add("active");
+                
             ScrollViewInterop.CurrentHandleElement = scrollContainer.querySelector(".handle");
             var delta = Math.max(-3, Math.min(3, e.deltaY || -e.detail));
             ScrollViewInterop.DoScroll(delta);

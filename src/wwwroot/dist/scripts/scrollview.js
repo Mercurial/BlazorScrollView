@@ -94,7 +94,10 @@ var BlazorScrollView;
             }
         };
         ScrollViewInterop.HandleWheel = function (e) {
+            var _a, _b;
             var scrollContainer = e.currentTarget;
+            if (!((_a = scrollContainer) === null || _a === void 0 ? void 0 : _a.classList.contains("active")))
+                (_b = scrollContainer) === null || _b === void 0 ? void 0 : _b.classList.add("active");
             ScrollViewInterop.CurrentHandleElement = scrollContainer.querySelector(".handle");
             var delta = Math.max(-3, Math.min(3, e.deltaY || -e.detail));
             ScrollViewInterop.DoScroll(delta);
