@@ -33,6 +33,7 @@ var BlazorScrollView;
         ScrollViewInterop.OnScrollContainerMouseEnter = function (e) {
             var target = e.currentTarget;
             target.classList.add("active");
+            ScrollViewInterop.SetScrollHandleHeight(target);
         };
         ScrollViewInterop.OnScrollContainerMouseLeave = function (e) {
             var target = e.currentTarget;

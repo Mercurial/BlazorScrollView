@@ -39,6 +39,7 @@ namespace BlazorScrollView {
         private static OnScrollContainerMouseEnter(e: MouseEvent) {
             var target = e.currentTarget as HTMLDivElement;
             target.classList.add("active");
+            ScrollViewInterop.SetScrollHandleHeight(target);
         }
         private static OnScrollContainerMouseLeave(e: MouseEvent) {
             var target = e.currentTarget as HTMLDivElement;
@@ -53,7 +54,7 @@ namespace BlazorScrollView {
                 e.stopImmediatePropagation();
                 e.stopPropagation();
 
-                var scrollContainer = target.parentElement?.parentElement;
+                var scrollContainer = target.parentElement?.parentElement as HTMLDivElement;
                 if (!scrollContainer?.classList.contains("active"))
                     scrollContainer?.classList.add("active");
 
@@ -68,7 +69,7 @@ namespace BlazorScrollView {
                 e.stopImmediatePropagation();
                 e.stopPropagation();
 
-                var scrollContainer = ScrollViewInterop.CurrentHandleElement.parentElement?.parentElement;
+                var scrollContainer = ScrollViewInterop.CurrentHandleElement.parentElement?.parentElement as HTMLDivElement;
                 if (!scrollContainer?.classList.contains("active"))
                     scrollContainer?.classList.add("active");
 
@@ -117,7 +118,7 @@ namespace BlazorScrollView {
 
             if (!scrollContainer?.classList.contains("active"))
                 scrollContainer?.classList.add("active");
-                
+
             ScrollViewInterop.CurrentHandleElement = scrollContainer.querySelector(".handle");
             var delta = Math.max(-3, Math.min(3, e.deltaY || -e.detail));
             ScrollViewInterop.DoScroll(delta);
