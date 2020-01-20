@@ -120,7 +120,7 @@ namespace BlazorScrollView {
                 scrollContainer?.classList.add("active");
 
             ScrollViewInterop.CurrentHandleElement = scrollContainer.querySelector(".handle");
-            var delta = Math.max(-3, Math.min(3, e.deltaY || -e.detail));
+            var delta = Math.max(-6, Math.min(6, e.deltaY || -e.detail));
             ScrollViewInterop.DoScroll(delta);
             ScrollViewInterop.CurrentHandleElement = null;
             return false;
