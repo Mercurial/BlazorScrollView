@@ -3,6 +3,9 @@ namespace BlazorScrollView {
         public static CurrentHandleElement: HTMLDivElement | null;
         public static CurrentHandleY: number;
         public static IsGlobalHandlersInitialized = false;
+        public static CurrentScrollAccelerationMultiplier = 0;
+        public static CurrentScrollAcceleration = 0.02;
+        public static CurrentScrollAccelerationTimeoutId = 0;
 
         public static InitializeScrollView(scrollContainer: HTMLDivElement): void {
             let scrollHandleElement = document.createElement("div");
@@ -81,19 +84,27 @@ namespace BlazorScrollView {
         }
 
         private static DoScroll(displacement: number) {
+            console.log(displacement);
             let handle = ScrollViewInterop.CurrentHandleElement as HTMLDivElement;
             let handleContainer = handle.parentElement as HTMLDivElement;
             let scrollContainer = handleContainer.parentElement as HTMLDivElement;
             let vars = ScrollViewInterop.ExtractVariables(scrollContainer);
 
             scrollContainer.scrollTop += displacement * (vars[1] / vars[0]);
-
+            console.log(displacement * (vars[1] / vars[0]));
             let handleY = parseFloat(window.getComputedStyle(handle, null).top);
             let handleH = parseFloat(window.getComputedStyle(handle, null).height);
             let newHandleY = handleY + displacement;
 
-            newHandleY = newHandleY <= 0 ? 0 : newHandleY;
-            newHandleY = newHandleY >= vars[0] - handleH ? vars[0] - handleH : newHandleY;
+            if (newHandleY <= 0) {
+                newHandleY = 0;
+                ScrollViewInterop.CurrentScrollAccelerationMultiplier = 0;
+            }
+
+            if (newHandleY >= vars[0] - handleH) {
+                newHandleY = vars[0] - handleH;
+                ScrollViewInterop.CurrentScrollAccelerationMultiplier = 0;
+            }
 
             handleContainer.style.top = `${scrollContainer.scrollTop}px`;
             handle.style.top = `${newHandleY}px`;
@@ -114,15 +125,27 @@ namespace BlazorScrollView {
         }
 
         private static HandleWheel(e: WheelEvent) {
+            clearTimeout(ScrollViewInterop.CurrentScrollAccelerationTimeoutId);
             var scrollContainer = e.currentTarget as HTMLDivElement;
 
             if (!scrollContainer?.classList.contains("active"))
                 scrollContainer?.classList.add("active");
 
             ScrollViewInterop.CurrentHandleElement = scrollContainer.querySelector(".handle");
-            var delta = Math.max(-6, Math.min(6, e.deltaY || -e.detail));
-            ScrollViewInterop.DoScroll(delta);
+            var delta = Math.max(-0.5, Math.min(0.5, e.deltaY || -e.detail));
+            var dMultiplier = delta / Math.abs(delta);
+
+            if (ScrollViewInterop.CurrentScrollAccelerationMultiplier * dMultiplier < 0)
+                ScrollViewInterop.CurrentScrollAccelerationMultiplier = 0;
+
+            ScrollViewInterop.DoScroll(
+                delta + ScrollViewInterop.CurrentScrollAccelerationMultiplier * ScrollViewInterop.CurrentScrollAcceleration);
+            ScrollViewInterop.CurrentScrollAccelerationMultiplier += dMultiplier;
             ScrollViewInterop.CurrentHandleElement = null;
+
+            ScrollViewInterop.CurrentScrollAccelerationTimeoutId = setTimeout(() => {
+                ScrollViewInterop.CurrentScrollAccelerationMultiplier = 0;
+            }, 500);
             return false;
         }
 
