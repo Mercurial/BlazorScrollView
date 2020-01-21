@@ -69,13 +69,11 @@ var BlazorScrollView;
             }
         };
         ScrollViewInterop.DoScroll = function (displacement) {
-            console.log(displacement);
             var handle = ScrollViewInterop.CurrentHandleElement;
             var handleContainer = handle.parentElement;
             var scrollContainer = handleContainer.parentElement;
             var vars = ScrollViewInterop.ExtractVariables(scrollContainer);
             scrollContainer.scrollTop += displacement * (vars[1] / vars[0]);
-            console.log(displacement * (vars[1] / vars[0]));
             var handleY = parseFloat(window.getComputedStyle(handle, null).top);
             var handleH = parseFloat(window.getComputedStyle(handle, null).height);
             var newHandleY = handleY + displacement;
@@ -109,16 +107,18 @@ var BlazorScrollView;
             if (!((_a = scrollContainer) === null || _a === void 0 ? void 0 : _a.classList.contains("active")))
                 (_b = scrollContainer) === null || _b === void 0 ? void 0 : _b.classList.add("active");
             ScrollViewInterop.CurrentHandleElement = scrollContainer.querySelector(".handle");
-            var delta = Math.max(-0.5, Math.min(0.5, e.deltaY || -e.detail));
+            var vars = ScrollViewInterop.ExtractVariables(scrollContainer);
+            var a = (vars[0] / 20) / (vars[1] / vars[0]);
+            var delta = Math.max(-1, Math.min(1, e.deltaY || -e.detail));
             var dMultiplier = delta / Math.abs(delta);
             if (ScrollViewInterop.CurrentScrollAccelerationMultiplier * dMultiplier < 0)
                 ScrollViewInterop.CurrentScrollAccelerationMultiplier = 0;
-            ScrollViewInterop.DoScroll(delta + ScrollViewInterop.CurrentScrollAccelerationMultiplier * ScrollViewInterop.CurrentScrollAcceleration);
+            ScrollViewInterop.DoScroll(a * dMultiplier + ScrollViewInterop.CurrentScrollAccelerationMultiplier * ScrollViewInterop.CurrentScrollAcceleration);
             ScrollViewInterop.CurrentScrollAccelerationMultiplier += dMultiplier;
             ScrollViewInterop.CurrentHandleElement = null;
             ScrollViewInterop.CurrentScrollAccelerationTimeoutId = setTimeout(function () {
                 ScrollViewInterop.CurrentScrollAccelerationMultiplier = 0;
-            }, 500);
+            }, 100);
             return false;
         };
         ScrollViewInterop.SetScrollHandleHeight = function (scrollContainer) {
@@ -141,7 +141,7 @@ var BlazorScrollView;
         };
         ScrollViewInterop.IsGlobalHandlersInitialized = false;
         ScrollViewInterop.CurrentScrollAccelerationMultiplier = 0;
-        ScrollViewInterop.CurrentScrollAcceleration = 0.02;
+        ScrollViewInterop.CurrentScrollAcceleration = 0.2;
         ScrollViewInterop.CurrentScrollAccelerationTimeoutId = 0;
         return ScrollViewInterop;
     }());
