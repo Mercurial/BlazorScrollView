@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
 
 namespace BlazorScrollView
@@ -23,6 +24,7 @@ namespace BlazorScrollView
 
         #region Public Properties
         public ElementReference ScrollViewContainerRef { get; set; }
+        public bool IsAtBottom { get; set; }
         #endregion
 
         public ScrollViewViewModel() { }
@@ -36,6 +38,18 @@ namespace BlazorScrollView
             }
 
             await base.OnAfterRenderAsync(firstRender);
+        }
+
+        public async Task ScrollToBottom()
+        {
+            await JSRuntime.InvokeVoidAsync("BlazorScrollView.ScrollViewInterop.ScrollToBottom", ScrollViewContainerRef);
+            IsAtBottom = true;
+        }
+
+        public async void OnMouseWheel(MouseEventArgs e)
+        {
+            // Check if at bottom
+            IsAtBottom = await JSRuntime.InvokeAsync<bool>("BlazorScrollView.ScrollViewInterop.IsAtBottom", ScrollViewContainerRef);
         }
 
         public void Dispose()

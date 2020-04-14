@@ -30,6 +30,19 @@ namespace BlazorScrollView {
             scrollContainer.removeEventListener("mouseleave", ScrollViewInterop.OnScrollContainerMouseLeave);
         }
 
+        public static ScrollToBottom(scrollContainer: HTMLDivElement) {
+            var displacement = scrollContainer.scrollHeight - scrollContainer.offsetHeight;
+            ScrollViewInterop.CurrentHandleElement = scrollContainer.parentElement ? scrollContainer.parentElement.querySelector(`#${scrollContainer.id} > div.handle-container > .handle`) : null;
+
+
+            ScrollViewInterop.DoScroll(displacement);
+            ScrollViewInterop.CurrentHandleElement = null;
+        }
+
+        public static IsAtBottom(scrollContainer: HTMLDListElement): boolean {
+            return scrollContainer.scrollTop === (scrollContainer.scrollHeight - scrollContainer.offsetHeight);
+        }
+
         private static InitializeGlobalHandlers() {
             if (!ScrollViewInterop.IsGlobalHandlersInitialized) {
                 ScrollViewInterop.IsGlobalHandlersInitialized = true;
@@ -41,12 +54,24 @@ namespace BlazorScrollView {
 
         private static OnScrollContainerMouseEnter(e: MouseEvent) {
             let target = e.currentTarget as HTMLDivElement;
+
+            let parentScrollView = target.parentElement?.closest(".blazor-scrollview");
+            if (parentScrollView != null) {
+                parentScrollView?.classList.remove("active");
+            }
+
             target.classList.add("active");
             ScrollViewInterop.SetScrollHandleHeight(target);
+
         }
         private static OnScrollContainerMouseLeave(e: MouseEvent) {
             let target = e.currentTarget as HTMLDivElement;
             target.classList.remove("active");
+
+            let parentScrollView = target.parentElement?.closest(".blazor-scrollview");
+            if (parentScrollView != null) {
+                parentScrollView?.classList.add("active");
+            }
         }
 
         private static HandleMouseDown(e: MouseEvent) {
@@ -123,13 +148,17 @@ namespace BlazorScrollView {
         }
 
         private static HandleWheel(e: WheelEvent) {
+            e.preventDefault();
+            e.stopImmediatePropagation();
+            e.stopPropagation();
             clearTimeout(ScrollViewInterop.CurrentScrollAccelerationTimeoutId);
             let scrollContainer = e.currentTarget as HTMLDivElement;
 
             if (!scrollContainer?.classList.contains("active"))
                 scrollContainer?.classList.add("active");
 
-            ScrollViewInterop.CurrentHandleElement = scrollContainer.querySelector(".handle");
+            //ScrollViewInterop.CurrentHandleElement = scrollContainer.querySelector(".handle");
+            ScrollViewInterop.CurrentHandleElement = scrollContainer.parentElement ? scrollContainer.parentElement.querySelector(`#${scrollContainer.id} > div.handle-container > .handle`) : null;
             let vars = ScrollViewInterop.ExtractVariables(scrollContainer);
             let a = (vars[0] / 20) / (vars[1] / vars[0]);
             let delta = Math.max(-1, Math.min(1, e.deltaY || -e.detail));
