@@ -36,7 +36,6 @@ namespace BlazorScrollView {
         }
 
         public static ScrollToBottom(scrollContainer: ScrollViewElement) {
-
             let handle = scrollContainer.parentElement ? scrollContainer.parentElement.querySelector(`#${scrollContainer.id} > div.handle-container > .handle`) as HTMLDivElement : null;
             if (handle) {
                 let handleContainer = handle.parentElement as HTMLDivElement;
@@ -52,7 +51,6 @@ namespace BlazorScrollView {
         }
 
         public static ScrollToTop(scrollContainer: ScrollViewElement) {
-
             let handle = scrollContainer.parentElement ? scrollContainer.parentElement.querySelector(`#${scrollContainer.id} > div.handle-container > .handle`) as HTMLDivElement : null;
             if (handle) {
                 let handleContainer = handle.parentElement as HTMLDivElement;
