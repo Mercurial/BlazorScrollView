@@ -1,9 +1,12 @@
 ﻿@page "/"
-
+@using BlazorScrollView;
 @inherits IndexViewModel
 <h1>Hello, world!</h1>
-
-<ScrollView Id="scrollView">
+<div>
+    <button @onclick="(() => ScrollToBottom(ScrollView1))"> Scroll to Bottom Scroll View 1</button>
+    <button @onclick="(() => ScrollToTop(ScrollView1))"> Scroll to Top Scroll View 1</button>
+</div>
+<ScrollView Id="scrollView" OnScrollToBottom="@(() => OnScrollToBottom1())" OnScrollToTop="@(() => OnScrollToTop1())" OnScroll="@(() => OnScroll1())" @ref="ScrollView1">
     <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam sed turpis convallis, pulvinar eros ut, lobortis eros. Sed quis libero augue. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut dictum mauris urna, ut consequat nisl congue et. Praesent vestibulum auctor nunc nec facilisis. Nunc aliquet aliquet augue eget varius. Nulla facilisi. Maecenas urna diam, porta eu pulvinar vel, condimentum a ante. Suspendisse dignissim, massa eget condimentum bibendum, enim turpis auctor dui, sed ultricies felis arcu vitae mauris. Sed eleifend lacinia dolor, sed tristique ipsum maximus finibus. Morbi porta in risus sed finibus. Suspendisse gravida euismod consequat. Donec cursus id tellus in facilisis. Aliquam nec dolor eu nisi accumsan congue non eu nisl. Praesent tempor arcu ac turpis luctus consectetur. Quisque tristique ipsum elit, iaculis mattis leo fringilla elementum.</p>
 
     <p>Pellentesque interdum lorem at tristique pellentesque. Donec euismod est in commodo pulvinar. Vestibulum elementum elit vitae suscipit ultrices. Duis in nisl viverra nisi commodo consectetur sit amet non sem. Ut aliquam ultrices purus, a finibus elit aliquet in. Sed sagittis non turpis sed rhoncus. Mauris porttitor a ante sit amet feugiat.</p>
@@ -233,6 +236,7 @@
 
     <p>Curabitur enim arcu, sagittis eu porta nec, euismod a nisi. Nullam consequat augue mattis, elementum risus eu, venenatis diam. In eu ullamcorper nulla. Aliquam id auctor diam, vehicula luctus augue. Sed volutpat purus elit, gravida accumsan turpis pulvinar nec. Quisque purus sapien, ullamcorper at vehicula ut, lacinia non metus. Morbi vitae ultricies orci. Maecenas metus arcu, vulputate ac metus in, mattis blandit augue. Aliquam dignissim porta eleifend. Ut porttitor, dolor sed tempus vestibulum, felis turpis volutpat lorem, at congue justo libero at est. Maecenas eu massa imperdiet, hendrerit elit eu, pulvinar sem. Suspendisse porttitor congue tincidunt. Donec pretium tellus eget condimentum volutpat. </p>
 </ScrollView>
+
 <ScrollView Id="scrollView2">
     <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam sed turpis convallis, pulvinar eros ut, lobortis eros. Sed quis libero augue. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut dictum mauris urna, ut consequat nisl congue et. Praesent vestibulum auctor nunc nec facilisis. Nunc aliquet aliquet augue eget varius. Nulla facilisi. Maecenas urna diam, porta eu pulvinar vel, condimentum a ante. Suspendisse dignissim, massa eget condimentum bibendum, enim turpis auctor dui, sed ultricies felis arcu vitae mauris. Sed eleifend lacinia dolor, sed tristique ipsum maximus finibus. Morbi porta in risus sed finibus. Suspendisse gravida euismod consequat. Donec cursus id tellus in facilisis. Aliquam nec dolor eu nisi accumsan congue non eu nisl. Praesent tempor arcu ac turpis luctus consectetur. Quisque tristique ipsum elit, iaculis mattis leo fringilla elementum.</p>
 
@@ -244,14 +248,14 @@
 
 
 <ScrollView Id="scrollView3">
-   <div> test here</div>
+ 
     <p>Pellentesque interdum lorem at tristique pellentesque. Donec euismod est in commodo pulvinar. Vestibulum elementum elit vitae suscipit ultrices. Duis in nisl viverra nisi commodo consectetur sit amet non sem. Ut aliquam ultrices purus, a finibus elit aliquet in. Sed sagittis non turpis sed rhoncus. Mauris porttitor a ante sit amet feugiat.</p>
     <div>
-        <ScrollView Id="scrollView4" @ref="ScrollView4">
-            <img  @onclick="(() => OnClick(ScrollView4))"src="https://images.unsplash.com/photo-1586073305502-5c5cc4a594bd?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=627&q=80">
+        <ScrollView Id="scrollView4">
+            <img src="https://images.unsplash.com/photo-1586073305502-5c5cc4a594bd?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=627&q=80">
 
-            <ScrollView Id="scrollView5" @ref="ScrollView5" >
-                <img  @onclick="(() => OnClick(ScrollView5))" src="https://images.unsplash.com/photo-1542459504-9e13de128bb4?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=635&q=80">   
+            <ScrollView Id="scrollView5" >
+                <img src="https://images.unsplash.com/photo-1542459504-9e13de128bb4?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=635&q=80">   
             </ScrollView>  
         </ScrollView>
 
