@@ -10,9 +10,9 @@
     top: 1px;
     height: 100%;
     width: 10px;
-		transition: opacity 500ms;
-		opacity: 0;
-		background-color: #8080806b;
+    transition: opacity 500ms;
+    opacity: 0;
+    background-color: #8080806b;
 
     .handle {
       position: absolute;
@@ -28,7 +28,7 @@
 }
 
 .blazor-scrollview.active {
-  .handle-container {
+  > .handle-container {
     opacity: 1;
   }
 }
