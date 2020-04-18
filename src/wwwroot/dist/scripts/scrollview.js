@@ -24,6 +24,7 @@ var BlazorScrollView;
             scrollContainer.removeEventListener("mouseleave", ScrollViewInterop.OnScrollContainerMouseLeave);
         };
         ScrollViewInterop.ScrollToBottom = function (scrollContainer) {
+            ScrollViewInterop.SetScrollHandleHeight(scrollContainer);
             var handle = scrollContainer.querySelector(":scope > div.handle-container > .handle");
             var handleContainer = handle.parentElement;
             var yPosition = scrollContainer.scrollHeight - scrollContainer.clientHeight;
@@ -34,6 +35,7 @@ var BlazorScrollView;
             scrollContainer.componentRef.invokeMethodAsync("ScrolledToBottomAsync");
         };
         ScrollViewInterop.ScrollToTop = function (scrollContainer) {
+            ScrollViewInterop.SetScrollHandleHeight(scrollContainer);
             var handle = scrollContainer.querySelector(":scope > div.handle-container > .handle");
             var handleContainer = handle.parentElement;
             var yPosition = 0;
@@ -64,8 +66,8 @@ var BlazorScrollView;
             if (parentScrollView != null) {
                 parentScrollView === null || parentScrollView === void 0 ? void 0 : parentScrollView.classList.remove("active");
             }
-            target.classList.add("active");
             ScrollViewInterop.SetScrollHandleHeight(target);
+            target.classList.add("active");
         };
         ScrollViewInterop.OnScrollContainerMouseLeave = function (e) {
             var _a;

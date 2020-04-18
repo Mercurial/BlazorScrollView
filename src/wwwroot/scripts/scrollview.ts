@@ -59,7 +59,6 @@ namespace BlazorScrollView {
 
             scrollContainer.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
             scrollContainer.componentRef.invokeMethodAsync("ScrolledToTopAsync");
-
         }
 
         public static IsAtBottom(scrollContainer: ScrollViewElement): boolean {
@@ -87,10 +86,10 @@ namespace BlazorScrollView {
                 parentScrollView?.classList.remove("active");
             }
 
-            target.classList.add("active");
             ScrollViewInterop.SetScrollHandleHeight(target);
-
+            target.classList.add("active");
         }
+
         private static OnScrollContainerMouseLeave(e: MouseEvent) {
             let target = e.currentTarget as HTMLDivElement;
             target.classList.remove("active");

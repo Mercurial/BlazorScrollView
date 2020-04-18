@@ -8,6 +8,8 @@ namespace BlazorScrollView.Demo
     public class IndexViewModel : ComponentBase
     {
         protected ScrollView ScrollView1 { get; set; }
+        protected ScrollView ScrollView2 { get; set; }
+        protected int NoOfItems { get; set; }
 
         protected async override Task OnAfterRenderAsync(bool firstRender)
         {
@@ -18,14 +20,14 @@ namespace BlazorScrollView.Demo
             await base.OnAfterRenderAsync(firstRender);
         }
 
-        protected async void ScrollToBottomAsync(ScrollView scrollView)
+        protected void ScrollToBottom(ScrollView scrollView)
         {
-            await scrollView.ScrollToBottomAsync();
+            scrollView.ScrollToBottom();
         }
 
-        protected async void ScrollToTopAsync(ScrollView scrollView)
+        protected void ScrollToTop(ScrollView scrollView)
         {
-            await scrollView.ScrollToTopAsync();
+            scrollView.ScrollToTop();
         }
 
         protected void OnScrollToBottom1()
@@ -41,6 +43,12 @@ namespace BlazorScrollView.Demo
         protected void OnScroll1()
         {
             Console.WriteLine("ScrollView1 did scroll");
+        }
+
+        protected void AddItems()
+        {
+            NoOfItems++;
+            ScrollView2.ScrollToBottom();
         }
     }
 }
