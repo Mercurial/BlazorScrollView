@@ -45,33 +45,33 @@ namespace BlazorScrollView
             await base.OnAfterRenderAsync(firstRender);
         }
 
-        public async void ScrollToBottom()
+        public async Task ScrollToBottomAsync()
         {
             await JSRuntime.InvokeVoidAsync("BlazorScrollView.ScrollViewInterop.ScrollToBottom", ScrollViewContainerRef);
         }
 
-        public async void ScrollToTop()
+        public async Task ScrollToTopAsync()
         {
             await JSRuntime.InvokeVoidAsync("BlazorScrollView.ScrollViewInterop.ScrollToTop", ScrollViewContainerRef);
         }
 
 
         [JSInvokable]
-        public async void ScrolledToBottom()
+        public async void ScrolledToBottomAsync()
         {
             if (OnScrollToBottom.HasDelegate)
                 await OnScrollToBottom.InvokeAsync(new EventArgs());
         }
 
         [JSInvokable]
-        public async void ScrolledToTop()
+        public async void ScrolledToTopAsync()
         {
             if (OnScrollToTop.HasDelegate)
                 await OnScrollToTop.InvokeAsync(new EventArgs());
         }
 
         [JSInvokable]
-        public async void DidScroll()
+        public async void DidScrollAsync()
         {
             if (OnScroll.HasDelegate)
                 await OnScroll.InvokeAsync(new EventArgs());
