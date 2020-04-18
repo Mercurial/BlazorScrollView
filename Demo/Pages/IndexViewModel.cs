@@ -19,14 +19,14 @@ namespace BlazorScrollView.Demo
 
         }
 
-        protected async void ScrollToBottom(ScrollView scrollView)
+        protected void ScrollToBottom(ScrollView scrollView)
         {
-            await scrollView.ScrollToBottom();
+            scrollView.ScrollToBottom();
         }
 
-        protected async void ScrollToTop(ScrollView scrollView)
+        protected void ScrollToTop(ScrollView scrollView)
         {
-            await scrollView.ScrollToTop();
+            scrollView.ScrollToTop();
         }
 
         protected void OnScrollToBottom1()

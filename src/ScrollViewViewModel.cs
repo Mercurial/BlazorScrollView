@@ -45,12 +45,12 @@ namespace BlazorScrollView
             await base.OnAfterRenderAsync(firstRender);
         }
 
-        public async Task ScrollToBottom()
+        public async void ScrollToBottom()
         {
             await JSRuntime.InvokeVoidAsync("BlazorScrollView.ScrollViewInterop.ScrollToBottom", ScrollViewContainerRef);
         }
 
-        public async Task ScrollToTop()
+        public async void ScrollToTop()
         {
             await JSRuntime.InvokeVoidAsync("BlazorScrollView.ScrollViewInterop.ScrollToTop", ScrollViewContainerRef);
         }
