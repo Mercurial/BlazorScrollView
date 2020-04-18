@@ -36,33 +36,29 @@ namespace BlazorScrollView {
         }
 
         public static ScrollToBottom(scrollContainer: ScrollViewElement) {
-            let handle = scrollContainer.parentElement ? scrollContainer.parentElement.querySelector(`#${scrollContainer.id} > div.handle-container > .handle`) as HTMLDivElement : null;
-            if (handle) {
-                let handleContainer = handle.parentElement as HTMLDivElement;
-                var yPosition = scrollContainer.scrollHeight - scrollContainer.clientHeight;
-                handleContainer.style.top = `${yPosition}px`;
+            let handle = scrollContainer.querySelector(":scope > div.handle-container > .handle") as HTMLDivElement;
+            let handleContainer = handle.parentElement as HTMLDivElement;
+            var yPosition = scrollContainer.scrollHeight - scrollContainer.clientHeight;
+            handleContainer.style.top = `${yPosition}px`;
 
-                let newHandleY = scrollContainer.clientHeight - parseFloat(window.getComputedStyle(handle, null).height);
-                handle.style.top = `${newHandleY}px`;
+            let newHandleY = scrollContainer.clientHeight - parseFloat(window.getComputedStyle(handle, null).height);
+            handle.style.top = `${newHandleY}px`;
 
-                scrollContainer.scrollTo({ top: yPosition, left: 0, behavior: 'smooth' });
-                scrollContainer.componentRef.invokeMethodAsync("ScrolledToBottom");
-            }
+            scrollContainer.scrollTo({ top: yPosition, left: 0, behavior: 'smooth' });
+            scrollContainer.componentRef.invokeMethodAsync("ScrolledToBottomAsync");
         }
 
         public static ScrollToTop(scrollContainer: ScrollViewElement) {
-            let handle = scrollContainer.parentElement ? scrollContainer.parentElement.querySelector(`#${scrollContainer.id} > div.handle-container > .handle`) as HTMLDivElement : null;
-            if (handle) {
-                let handleContainer = handle.parentElement as HTMLDivElement;
-                var yPosition = 0;
-                handleContainer.style.top = `${yPosition}px`;
+            let handle = scrollContainer.querySelector(":scope > div.handle-container > .handle") as HTMLDivElement;
+            let handleContainer = handle.parentElement as HTMLDivElement;
+            var yPosition = 0;
+            handleContainer.style.top = `${yPosition}px`;
 
-                let newHandleY = 0;
-                handle.style.top = `${newHandleY}px`;
+            let newHandleY = 0;
+            handle.style.top = `${newHandleY}px`;
 
-                scrollContainer.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
-                scrollContainer.componentRef.invokeMethodAsync("ScrolledToTop");
-            }
+            scrollContainer.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+            scrollContainer.componentRef.invokeMethodAsync("ScrolledToTopAsync");
         }
 
         public static IsAtBottom(scrollContainer: ScrollViewElement): boolean {
@@ -90,10 +86,10 @@ namespace BlazorScrollView {
                 parentScrollView?.classList.remove("active");
             }
 
-            target.classList.add("active");
             ScrollViewInterop.SetScrollHandleHeight(target);
-
+            target.classList.add("active");
         }
+
         private static OnScrollContainerMouseLeave(e: MouseEvent) {
             let target = e.currentTarget as HTMLDivElement;
             target.classList.remove("active");
@@ -188,8 +184,7 @@ namespace BlazorScrollView {
             if (!scrollContainer?.classList.contains("active"))
                 scrollContainer?.classList.add("active");
 
-            //ScrollViewInterop.CurrentHandleElement = scrollContainer.querySelector(".handle");
-            ScrollViewInterop.CurrentHandleElement = scrollContainer.parentElement ? scrollContainer.parentElement.querySelector(`#${scrollContainer.id} > div.handle-container > .handle`) : null;
+            ScrollViewInterop.CurrentHandleElement = scrollContainer.querySelector(":scope > .handle-container > .handle");
             let vars = ScrollViewInterop.ExtractVariables(scrollContainer);
             let a = (vars[0] / 20) / (vars[1] / vars[0]);
             let delta = Math.max(-1, Math.min(1, e.deltaY || -e.detail));
@@ -215,7 +210,7 @@ namespace BlazorScrollView {
             let ht = vars[1];
             let hs = vars[2];
             let hh = ScrollViewInterop.GetScrollHandleHeight(hv, hs, ht);
-            let handle = scrollContainer.querySelector(".handle") as HTMLDivElement;
+            let handle = scrollContainer.querySelector(":scope > .handle-container > .handle") as HTMLDivElement;
             handle.style.height = `${hh}px`;
         }
 
@@ -225,7 +220,7 @@ namespace BlazorScrollView {
 
         private static ExtractVariables(scrollContainer: HTMLDivElement) {
             let hv = parseFloat(window.getComputedStyle(scrollContainer, null).height);
-            let hs = parseFloat(window.getComputedStyle(scrollContainer.querySelector(".handle-container") as HTMLDivElement, null).height);
+            let hs = parseFloat(window.getComputedStyle(scrollContainer.querySelector(":scope > .handle-container") as HTMLDivElement, null).height);
             let ht = scrollContainer.scrollHeight;
             return [hv, ht, hs];
         }
@@ -234,13 +229,13 @@ namespace BlazorScrollView {
             let IsAtBottom = this.IsAtBottom(scrollContainer);
             let IsAtTop = this.IsAtTop(scrollContainer);
 
-            scrollContainer.componentRef.invokeMethodAsync("DidScroll");
+            scrollContainer.componentRef.invokeMethodAsync("DidScrollAsync");
 
             if (IsAtBottom) {
-                scrollContainer.componentRef.invokeMethodAsync("ScrolledToBottom");
+                scrollContainer.componentRef.invokeMethodAsync("ScrolledToBottomAsync");
             }
             if (IsAtTop) {
-                scrollContainer.componentRef.invokeMethodAsync("ScrolledToTop");
+                scrollContainer.componentRef.invokeMethodAsync("ScrolledToTopAsync");
             }
         }
     }

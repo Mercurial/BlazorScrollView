@@ -32,6 +32,11 @@ namespace BlazorScrollView
         public ElementReference ScrollViewContainerRef { get; set; }
         #endregion
 
+        #region Protected Properties
+        protected bool ShouldScrollToBottomOnRerender { get; set; }
+        protected bool ShouldScrollToTopOnRerender { get; set; }
+        #endregion
+
         public ScrollViewViewModel() { }
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -42,36 +47,47 @@ namespace BlazorScrollView
                 await JSRuntime.InvokeVoidAsync("BlazorScrollView.ScrollViewInterop.InitializeScrollView", ScrollViewContainerRef, DotNetObjectReference.Create(this));
             }
 
+            if (ShouldScrollToBottomOnRerender)
+            {
+                ShouldScrollToBottomOnRerender = false;
+                await JSRuntime.InvokeVoidAsync("BlazorScrollView.ScrollViewInterop.ScrollToBottom", ScrollViewContainerRef);
+            }
+
+            if (ShouldScrollToTopOnRerender)
+            {
+                ShouldScrollToTopOnRerender = false;
+                await JSRuntime.InvokeVoidAsync("BlazorScrollView.ScrollViewInterop.ScrollToTop", ScrollViewContainerRef);
+            }
             await base.OnAfterRenderAsync(firstRender);
         }
 
-        public async void ScrollToBottom()
+        public void ScrollToBottom()
         {
-            await JSRuntime.InvokeVoidAsync("BlazorScrollView.ScrollViewInterop.ScrollToBottom", ScrollViewContainerRef);
+            ShouldScrollToBottomOnRerender = true;
         }
 
-        public async void ScrollToTop()
+        public void ScrollToTop()
         {
-            await JSRuntime.InvokeVoidAsync("BlazorScrollView.ScrollViewInterop.ScrollToTop", ScrollViewContainerRef);
+            ShouldScrollToTopOnRerender = true;
         }
 
 
         [JSInvokable]
-        public async void ScrolledToBottom()
+        public async void ScrolledToBottomAsync()
         {
             if (OnScrollToBottom.HasDelegate)
                 await OnScrollToBottom.InvokeAsync(new EventArgs());
         }
 
         [JSInvokable]
-        public async void ScrolledToTop()
+        public async void ScrolledToTopAsync()
         {
             if (OnScrollToTop.HasDelegate)
                 await OnScrollToTop.InvokeAsync(new EventArgs());
         }
 
         [JSInvokable]
-        public async void DidScroll()
+        public async void DidScrollAsync()
         {
             if (OnScroll.HasDelegate)
                 await OnScroll.InvokeAsync(new EventArgs());
