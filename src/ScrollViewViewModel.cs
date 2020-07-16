@@ -30,10 +30,11 @@ namespace BlazorScrollView
 
         #region Public Properties
         public ElementReference ScrollViewContainerRef { get; set; }
-        #endregion
+		#endregion
 
-        #region Protected Properties
-        protected bool ShouldScrollToBottomOnRerender { get; set; }
+		#region Protected Properties
+		protected bool IsInitialized { get; set; } = false;
+		protected bool ShouldScrollToBottomOnRerender { get; set; }
         protected bool ShouldScrollToTopOnRerender { get; set; }
         #endregion
 
@@ -45,30 +46,19 @@ namespace BlazorScrollView
             if (firstRender)
             {
                 await JSRuntime.InvokeVoidAsync("BlazorScrollView.ScrollViewInterop.InitializeScrollView", ScrollViewContainerRef, DotNetObjectReference.Create(this));
-            }
-
-            if (ShouldScrollToBottomOnRerender)
-            {
-                ShouldScrollToBottomOnRerender = false;
-                await JSRuntime.InvokeVoidAsync("BlazorScrollView.ScrollViewInterop.ScrollToBottom", ScrollViewContainerRef);
-            }
-
-            if (ShouldScrollToTopOnRerender)
-            {
-                ShouldScrollToTopOnRerender = false;
-                await JSRuntime.InvokeVoidAsync("BlazorScrollView.ScrollViewInterop.ScrollToTop", ScrollViewContainerRef);
-            }
+				IsInitialized = true;
+			}
             await base.OnAfterRenderAsync(firstRender);
         }
 
-        public void ScrollToBottom()
+        public async void ScrollToBottom()
         {
-            ShouldScrollToBottomOnRerender = true;
+            await JSRuntime.InvokeVoidAsync("BlazorScrollView.ScrollViewInterop.ScrollToBottom", ScrollViewContainerRef);
         }
 
-        public void ScrollToTop()
+        public async void ScrollToTop()
         {
-            ShouldScrollToTopOnRerender = true;
+            await JSRuntime.InvokeVoidAsync("BlazorScrollView.ScrollViewInterop.ScrollToTop", ScrollViewContainerRef);
         }
 
 
@@ -94,9 +84,13 @@ namespace BlazorScrollView
         }
 
 
-        public void Dispose()
+        public async void Dispose()
         {
-            JSRuntime.InvokeVoidAsync("BlazorScrollView.ScrollViewInterop.UnInitializeScrollView", ScrollViewContainerRef);
+			if (IsInitialized)
+			{
+			    await JSRuntime.InvokeVoidAsync("BlazorScrollView.ScrollViewInterop.UnInitializeScrollView", ScrollViewContainerRef);
+                await JSRuntime.InvokeVoidAsync("BlazorScrollView.ScrollViewInterop.UnInitializeGlobalHandlers"); 
+            }
         }
     }
 }
