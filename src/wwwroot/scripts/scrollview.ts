@@ -9,6 +9,7 @@ namespace BlazorScrollView {
         public static CurrentScrollAccelerationMultiplier = 0;
         public static CurrentScrollAcceleration = 0.2;
         public static CurrentScrollAccelerationTimeoutId = 0;
+        public static ScrollLineHeight: number = 10;
 
         public static InitializeScrollView(scrollContainer: ScrollViewElement, componentRef: any): void {
             let scrollHandleElement = document.createElement("div");
@@ -24,7 +25,7 @@ namespace BlazorScrollView {
             scrollContainer.addEventListener("mouseleave", ScrollViewInterop.OnScrollContainerMouseLeave);
 
             scrollContainer.componentRef = componentRef;
-
+            ScrollViewInterop.ScrollLineHeight = ScrollViewInterop.GetScrollLineHeight();
             ScrollViewInterop.SetScrollHandleHeight(scrollContainer);
             ScrollViewInterop.InitializeGlobalHandlers();
         }
@@ -187,20 +188,32 @@ namespace BlazorScrollView {
             ScrollViewInterop.CurrentHandleElement = scrollContainer.querySelector(":scope > .handle-container > .handle");
             let vars = ScrollViewInterop.ExtractVariables(scrollContainer);
             let a = (vars[0] / 20) / (vars[1] / vars[0]);
-            let delta = Math.max(-1, Math.min(1, e.deltaY || -e.detail));
-            let dMultiplier = delta / Math.abs(delta);
+            let delta;
+            if (e.deltaMode == 0) { 
+                delta = e.deltaY; 
+            }
+            else if (e.deltaMode == 1) {
+                delta = e.deltaY * ScrollViewInterop.ScrollLineHeight;
+            }
+            else {
+                delta = e.deltaY * window.innerHeight;
+            }
+            
+            if (delta != 0)
+            { 
+                let dMultiplier = delta / Math.abs(delta);
+                if (ScrollViewInterop.CurrentScrollAccelerationMultiplier * dMultiplier < 0)
+                    ScrollViewInterop.CurrentScrollAccelerationMultiplier = 0;
 
-            if (ScrollViewInterop.CurrentScrollAccelerationMultiplier * dMultiplier < 0)
-                ScrollViewInterop.CurrentScrollAccelerationMultiplier = 0;
+                ScrollViewInterop.DoScroll(
+                    a * dMultiplier + ScrollViewInterop.CurrentScrollAccelerationMultiplier * ScrollViewInterop.CurrentScrollAcceleration);
+                ScrollViewInterop.CurrentScrollAccelerationMultiplier += dMultiplier;
+                ScrollViewInterop.CurrentHandleElement = null;
 
-            ScrollViewInterop.DoScroll(
-                a * dMultiplier + ScrollViewInterop.CurrentScrollAccelerationMultiplier * ScrollViewInterop.CurrentScrollAcceleration);
-            ScrollViewInterop.CurrentScrollAccelerationMultiplier += dMultiplier;
-            ScrollViewInterop.CurrentHandleElement = null;
-
-            ScrollViewInterop.CurrentScrollAccelerationTimeoutId = setTimeout(() => {
-                ScrollViewInterop.CurrentScrollAccelerationMultiplier = 0;
-            }, 100);
+                ScrollViewInterop.CurrentScrollAccelerationTimeoutId = setTimeout(() => {
+                    ScrollViewInterop.CurrentScrollAccelerationMultiplier = 0;
+                }, 100);
+            }
             return false;
         }
 
@@ -237,6 +250,16 @@ namespace BlazorScrollView {
             if (IsAtTop) {
                 scrollContainer.componentRef.invokeMethodAsync("ScrolledToTopAsync");
             }
+        }
+
+        private static GetScrollLineHeight() : number { 
+            const el = document.createElement('div');
+            el.style.fontSize = 'initial';
+            el.style.display = 'none';
+            document.body.appendChild(el);
+            const fontSize = window.getComputedStyle(el).fontSize;
+            document.body.removeChild(el);
+            return fontSize ? window.parseInt(fontSize) : this.ScrollLineHeight;
         }
     }
 }
