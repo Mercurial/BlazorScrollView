@@ -1,5 +1,6 @@
 interface IScrollViewElement extends HTMLDivElement {
     componentRef: any;
+    ScrollPadding: number;
 }
 
 enum WheelEventDeltaModes
@@ -20,13 +21,17 @@ namespace BlazorScrollView {
         public static ScrollLineHeight: number = 10;
         public static SmallHandleHeightCriterion: number = 10;
         public static ScrollHeightOffset: number = 5;
+        public static ScrollPadding: number = 10;
 
-        public static InitializeScrollView(scrollContainer: IScrollViewElement, componentRef: any): void {
+        public static InitializeScrollView(scrollContainer: IScrollViewElement, scrollPadding: number = 0, componentRef: any): void {
             let scrollHandleElement = document.createElement("div");
             scrollHandleElement.classList.add("handle");
+            scrollHandleElement.style.top = `${scrollPadding}px`;
 
             let scrollHandleContainerElement = document.createElement("div");
             scrollHandleContainerElement.classList.add("handle-container");
+            scrollHandleContainerElement.style.paddingTop = `${scrollPadding}px`;
+            scrollHandleContainerElement.style.paddingBottom = `${scrollPadding}px`;
 
             let scrollHandleContainerShadowElement = document.createElement("div");
             scrollHandleContainerShadowElement.classList.add("handle-container-shadow");
@@ -40,6 +45,7 @@ namespace BlazorScrollView {
             scrollContainer.addEventListener("mouseleave", ScrollViewInterop.OnScrollContainerMouseLeave);
 
             scrollContainer.componentRef = componentRef;
+            scrollContainer.ScrollPadding = scrollPadding;
             ScrollViewInterop.ScrollLineHeight = ScrollViewInterop.GetScrollLineHeight();
             ScrollViewInterop.SetScrollHandleHeight(scrollContainer);
             ScrollViewInterop.InitializeGlobalHandlers();
@@ -54,23 +60,23 @@ namespace BlazorScrollView {
         public static ScrollToBottom(scrollContainer: IScrollViewElement) {
             let handle = scrollContainer.querySelector(":scope > div.handle-container > .handle") as HTMLDivElement;
             let handleContainer = handle.parentElement as HTMLDivElement;
-            var yPosition = scrollContainer.scrollHeight - scrollContainer.clientHeight;
+            var yPosition = scrollContainer.scrollHeight - scrollContainer.clientHeight + scrollContainer.ScrollPadding;
             handleContainer.style.top = `${yPosition}px`;
 
-            let newHandleY = scrollContainer.clientHeight - parseFloat(window.getComputedStyle(handle, null).height);
+            let newHandleY = scrollContainer.clientHeight - parseFloat(window.getComputedStyle(handle, null).height) - scrollContainer.ScrollPadding;
             handle.style.top = `${newHandleY}px`;
 
-            scrollContainer.scrollTo({ top: yPosition, left: 0, behavior: 'smooth' });
+            scrollContainer.scrollTo({ top: yPosition + scrollContainer.ScrollPadding, left: 0, behavior: 'smooth' });
             scrollContainer.componentRef.invokeMethodAsync("ScrolledToBottomAsync");
         }
 
         public static ScrollToTop(scrollContainer: IScrollViewElement) {
             let handle = scrollContainer.querySelector(":scope > div.handle-container > .handle") as HTMLDivElement;
             let handleContainer = handle.parentElement as HTMLDivElement;
-            var yPosition = 0;
+            var yPosition = scrollContainer.ScrollPadding;
             handleContainer.style.top = `${yPosition}px`;
 
-            let newHandleY = 0;
+            let newHandleY = scrollContainer.ScrollPadding;
             handle.style.top = `${newHandleY}px`;
 
             scrollContainer.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
@@ -78,11 +84,11 @@ namespace BlazorScrollView {
         }
 
         public static IsAtBottom(scrollContainer: IScrollViewElement): boolean {
-            return scrollContainer.scrollTop + ScrollViewInterop.ScrollHeightOffset >= (scrollContainer.scrollHeight - scrollContainer.offsetHeight);
+            return scrollContainer.scrollTop + ScrollViewInterop.ScrollHeightOffset >= (scrollContainer.scrollHeight - scrollContainer.offsetHeight) - this.ScrollPadding;
         }
 
         public static IsAtTop(scrollContainer: IScrollViewElement): boolean {
-            return scrollContainer.scrollTop === 0;
+            return scrollContainer.scrollTop === this.ScrollPadding;
         }
 
         private static InitializeGlobalHandlers() {
@@ -185,13 +191,14 @@ namespace BlazorScrollView {
             let handleH = parseFloat(window.getComputedStyle(handle, null).height);
             let newHandleY = handleY + displacement;
 
-            if (newHandleY <= 0) {
-                newHandleY = 0;
+            console.log(scrollContainer.ScrollPadding)
+            if (newHandleY <= scrollContainer.ScrollPadding) {
+                newHandleY = scrollContainer.ScrollPadding;
                 ScrollViewInterop.CurrentScrollAccelerationMultiplier = 0;
             }
 
-            if (newHandleY >= vars[0] - handleH) {
-                newHandleY = vars[0] - handleH;
+            if (newHandleY >= vars[0] - handleH - scrollContainer.ScrollPadding ) {
+                newHandleY = vars[0] - handleH - scrollContainer.ScrollPadding;
                 ScrollViewInterop.CurrentScrollAccelerationMultiplier = 0;
             }
 

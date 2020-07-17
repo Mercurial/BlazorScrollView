@@ -16,16 +16,24 @@ namespace BlazorScrollView
         #region Parameters
         [Parameter]
         public string Id { get; set; }
+
         [Parameter]
         public string Class { get; set; }
+
         [Parameter]
         public RenderFragment ChildContent { get; set; }
+
         [Parameter]
         public EventCallback OnScrollToBottom { get; set; }
+
         [Parameter]
         public EventCallback OnScrollToTop { get; set; }
+
         [Parameter]
         public EventCallback OnScroll { get; set; }
+
+        [Parameter]
+        public int ScrollPadding { get; set; } = 0;
         #endregion
 
         #region Public Properties
@@ -45,7 +53,7 @@ namespace BlazorScrollView
 
             if (firstRender)
             {
-                await JSRuntime.InvokeVoidAsync("BlazorScrollView.ScrollViewInterop.InitializeScrollView", ScrollViewContainerRef, DotNetObjectReference.Create(this));
+                await JSRuntime.InvokeVoidAsync("BlazorScrollView.ScrollViewInterop.InitializeScrollView", ScrollViewContainerRef, ScrollPadding, DotNetObjectReference.Create(this));
 				IsInitialized = true;
 			}
             await base.OnAfterRenderAsync(firstRender);
