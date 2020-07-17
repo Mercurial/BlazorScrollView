@@ -1,5 +1,13 @@
-import { IScrollViewElement } from './Interfaces/IScrollViewElement';
-import { WheelEventDeltaModes } from './Enums/WheelEventDeltaModes';
+interface IScrollViewElement extends HTMLDivElement {
+    componentRef: any;
+}
+
+enum WheelEventDeltaModes
+{
+	Pixel,
+	Line,
+	Page
+}
 
 namespace BlazorScrollView {
     export class ScrollViewInterop {
@@ -10,6 +18,8 @@ namespace BlazorScrollView {
         public static CurrentScrollAcceleration = 0.2;
         public static CurrentScrollAccelerationTimeoutId = 0;
         public static ScrollLineHeight: number = 10;
+        public static SmallHandleHeightCriterion: number = 10;
+        public static ScrollHeightOffset: number = 5;
 
         public static InitializeScrollView(scrollContainer: IScrollViewElement, componentRef: any): void {
             let scrollHandleElement = document.createElement("div");
@@ -18,8 +28,13 @@ namespace BlazorScrollView {
             let scrollHandleContainerElement = document.createElement("div");
             scrollHandleContainerElement.classList.add("handle-container");
 
+            let scrollHandleContainerShadowElement = document.createElement("div");
+            scrollHandleContainerShadowElement.classList.add("handle-container-shadow");
+
             scrollHandleContainerElement.appendChild(scrollHandleElement);
+            scrollHandleContainerElement.appendChild(scrollHandleContainerShadowElement);
             scrollContainer.appendChild(scrollHandleContainerElement);
+
             scrollContainer.addEventListener("wheel", ScrollViewInterop.HandleWheel);
             scrollContainer.addEventListener("mouseenter", ScrollViewInterop.OnScrollContainerMouseEnter);
             scrollContainer.addEventListener("mouseleave", ScrollViewInterop.OnScrollContainerMouseLeave);
@@ -63,7 +78,7 @@ namespace BlazorScrollView {
         }
 
         public static IsAtBottom(scrollContainer: IScrollViewElement): boolean {
-            return scrollContainer.scrollTop === (scrollContainer.scrollHeight - scrollContainer.offsetHeight);
+            return scrollContainer.scrollTop + ScrollViewInterop.ScrollHeightOffset >= (scrollContainer.scrollHeight - scrollContainer.offsetHeight);
         }
 
         public static IsAtTop(scrollContainer: IScrollViewElement): boolean {
@@ -96,8 +111,11 @@ namespace BlazorScrollView {
                 parentScrollView?.classList.remove("active");
             }
 
-            ScrollViewInterop.SetScrollHandleHeight(target);
-            target.classList.add("active");
+            if(target.scrollHeight > target.getBoundingClientRect().height + + ScrollViewInterop.ScrollHeightOffset)
+            {
+                ScrollViewInterop.SetScrollHandleHeight(target);
+                target.classList.add("active");
+            }
         }
 
         private static OnScrollContainerMouseLeave(e: MouseEvent) {
@@ -117,6 +135,14 @@ namespace BlazorScrollView {
                 e.preventDefault();
                 e.stopImmediatePropagation();
                 e.stopPropagation();
+                
+                
+                if (target.classList.contains("small") && !target.classList.contains("expanded"))
+                    target?.classList.add("expanded");
+                
+                let scrollHandleContainer = target.parentElement;
+                if (!scrollHandleContainer?.classList.contains("expanded"))
+                    scrollHandleContainer?.classList.add("expanded");
 
                 let scrollContainer = target.parentElement?.parentElement as IScrollViewElement;
                 if (!scrollContainer?.classList.contains("active"))
@@ -137,10 +163,15 @@ namespace BlazorScrollView {
                 if (!scrollContainer?.classList.contains("active"))
                     scrollContainer?.classList.add("active");
 
+                
                 let startY = ScrollViewInterop.CurrentHandleY;
                 let displacement = e.clientY - startY;
-                ScrollViewInterop.DoScroll(displacement);
-                ScrollViewInterop.CurrentHandleY = e.clientY;
+                if((!ScrollViewInterop.IsAtTop(scrollContainer as IScrollViewElement) && displacement < 0) || 
+                (!ScrollViewInterop.IsAtBottom(scrollContainer as IScrollViewElement) && displacement > 0))
+                {
+                    ScrollViewInterop.DoScroll(displacement);
+                    ScrollViewInterop.CurrentHandleY = e.clientY;
+                }
             }
         }
 
@@ -176,10 +207,17 @@ namespace BlazorScrollView {
                 e.stopImmediatePropagation();
                 e.stopPropagation();
 
+                if (ScrollViewInterop.CurrentHandleElement.classList.contains("expanded"))
+                    ScrollViewInterop.CurrentHandleElement?.classList.remove("expanded");
+
+                let scrollHandleContainer = ScrollViewInterop.CurrentHandleElement.parentElement;
+                if (scrollHandleContainer?.classList.contains("expanded"))
+                    scrollHandleContainer?.classList.remove("expanded");
+
                 let scrollContainer = ScrollViewInterop.CurrentHandleElement.parentElement?.parentElement;
                 if (scrollContainer?.classList.contains("active"))
                     scrollContainer?.classList.remove("active");
-
+                
                 ScrollViewInterop.CurrentHandleElement = null;
             }
         }
@@ -189,9 +227,9 @@ namespace BlazorScrollView {
             e.stopImmediatePropagation();
             e.stopPropagation();
             clearTimeout(ScrollViewInterop.CurrentScrollAccelerationTimeoutId);
-            let scrollContainer = e.currentTarget as HTMLDivElement;
 
-            if (!scrollContainer?.classList.contains("active"))
+            let scrollContainer = e.currentTarget as HTMLDivElement;
+            if (!scrollContainer?.classList.contains("active") && scrollContainer.scrollHeight > scrollContainer.getBoundingClientRect().height + 1)
                 scrollContainer?.classList.add("active");
 
             ScrollViewInterop.CurrentHandleElement = scrollContainer.querySelector(":scope > .handle-container > .handle");
@@ -234,6 +272,10 @@ namespace BlazorScrollView {
             let hh = ScrollViewInterop.GetScrollHandleHeight(hv, hs, ht);
             let handle = scrollContainer.querySelector(":scope > .handle-container > .handle") as HTMLDivElement;
             handle.style.height = `${hh}px`;
+            if(ScrollViewInterop.SmallHandleHeightCriterion >= hh && !handle.classList.contains("small"))
+                handle.classList.add("small");
+            if(ScrollViewInterop.SmallHandleHeightCriterion < hh && handle.classList.contains("small"))
+                handle.classList.remove("small");
         }
 
         private static GetScrollHandleHeight(hv: number, hs: number, ht: number) {

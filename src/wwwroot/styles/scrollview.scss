@@ -12,17 +12,23 @@
     width: 10px;
     transition: opacity 500ms;
     opacity: 0;
-    background-color: #8080806b;
 
     .handle {
       position: absolute;
       right: 0px;
       top: 0px;
-      width: 100%;
+      width: 30%;
       height: 100%;
       outline: 1px solid black;
       cursor: pointer;
       background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    .handle-container-shadow {
+      width: 30%;
+      height: 100%;
+      float: right;
+      background-color: #8080806b;
     }
   }
 }
@@ -30,5 +36,18 @@
 .blazor-scrollview.active {
   > .handle-container {
     opacity: 1;
+    
+    >.handle.small.expanded,
+    >.handle.small:hover {
+      transform: scaleY(2);
+    }
+  }
+
+  > .handle-container.expanded,
+  > .handle-container:hover {
+      .handle,
+      .handle-container-shadow {
+        width: 100%;
+      }
   }
 }
