@@ -92,13 +92,9 @@ namespace BlazorScrollView
         }
 
 
-        public async void Dispose()
+        public void Dispose()
         {
-			if (IsInitialized)
-			{
-			    await JSRuntime.InvokeVoidAsync("BlazorScrollView.ScrollViewInterop.UnInitializeScrollView", ScrollViewContainerRef);
-                await JSRuntime.InvokeVoidAsync("BlazorScrollView.ScrollViewInterop.UnInitializeGlobalHandlers"); 
-            }
+			JSRuntime.InvokeVoidAsync("BlazorScrollView.ScrollViewInterop.UnInitializeScrollView", ScrollViewContainerRef);
         }
     }
 }

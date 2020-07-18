@@ -100,15 +100,6 @@ namespace BlazorScrollView {
             }
         }
 
-        private static UnInitializeGlobalHandlers() {
-            if (ScrollViewInterop.IsGlobalHandlersInitialized) {
-                ScrollViewInterop.IsGlobalHandlersInitialized = false;
-                document.removeEventListener("mousedown", ScrollViewInterop.HandleMouseDown);
-                document.removeEventListener("mousemove", ScrollViewInterop.HandleMouseMove);
-                document.removeEventListener("mouseup", ScrollViewInterop.HandleMouseUp);
-            }
-        }
-
         private static OnScrollContainerMouseEnter(e: MouseEvent) {
             let target = e.currentTarget as HTMLDivElement;
 
@@ -117,7 +108,7 @@ namespace BlazorScrollView {
                 parentScrollView?.classList.remove("active");
             }
 
-            if(target.scrollHeight > target.getBoundingClientRect().height + + ScrollViewInterop.ScrollHeightOffset)
+            if(target.scrollHeight > target.getBoundingClientRect().height + ScrollViewInterop.ScrollHeightOffset)
             {
                 ScrollViewInterop.SetScrollHandleHeight(target);
                 target.classList.add("active");
@@ -191,7 +182,6 @@ namespace BlazorScrollView {
             let handleH = parseFloat(window.getComputedStyle(handle, null).height);
             let newHandleY = handleY + displacement;
 
-            console.log(scrollContainer.ScrollPadding)
             if (newHandleY <= scrollContainer.ScrollPadding) {
                 newHandleY = scrollContainer.ScrollPadding;
                 ScrollViewInterop.CurrentScrollAccelerationMultiplier = 0;
@@ -236,22 +226,13 @@ namespace BlazorScrollView {
             clearTimeout(ScrollViewInterop.CurrentScrollAccelerationTimeoutId);
 
             let scrollContainer = e.currentTarget as HTMLDivElement;
-            if (!scrollContainer?.classList.contains("active") && scrollContainer.scrollHeight > scrollContainer.getBoundingClientRect().height + 1)
+            if (!scrollContainer?.classList.contains("active") && scrollContainer.scrollHeight > scrollContainer.getBoundingClientRect().height + ScrollViewInterop.ScrollHeightOffset)
                 scrollContainer?.classList.add("active");
 
             ScrollViewInterop.CurrentHandleElement = scrollContainer.querySelector(":scope > .handle-container > .handle");
             let vars = ScrollViewInterop.ExtractVariables(scrollContainer);
             let a = (vars[0] / 20) / (vars[1] / vars[0]);
-            let delta;
-            if (e.deltaMode == WheelEventDeltaModes.Pixel) { 
-                delta = e.deltaY; 
-            }
-            else if (e.deltaMode == WheelEventDeltaModes.Line) {
-                delta = e.deltaY * ScrollViewInterop.ScrollLineHeight;
-            }
-            else {
-                delta = e.deltaY * window.innerHeight;
-            }
+            let delta = Math.max(-1, Math.min(1, e.deltaY || -e.detail));
             
             if (delta != 0)
             { 
