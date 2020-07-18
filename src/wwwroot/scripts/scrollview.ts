@@ -108,7 +108,7 @@ namespace BlazorScrollView {
                 parentScrollView?.classList.remove("active");
             }
 
-            if(target.scrollHeight > target.getBoundingClientRect().height + + ScrollViewInterop.ScrollHeightOffset)
+            if(target.scrollHeight > target.getBoundingClientRect().height + ScrollViewInterop.ScrollHeightOffset)
             {
                 ScrollViewInterop.SetScrollHandleHeight(target);
                 target.classList.add("active");
@@ -226,7 +226,7 @@ namespace BlazorScrollView {
             clearTimeout(ScrollViewInterop.CurrentScrollAccelerationTimeoutId);
 
             let scrollContainer = e.currentTarget as HTMLDivElement;
-            if (!scrollContainer?.classList.contains("active") && scrollContainer.scrollHeight > scrollContainer.getBoundingClientRect().height + 1)
+            if (!scrollContainer?.classList.contains("active") && scrollContainer.scrollHeight > scrollContainer.getBoundingClientRect().height + ScrollViewInterop.ScrollHeightOffset)
                 scrollContainer?.classList.add("active");
 
             ScrollViewInterop.CurrentHandleElement = scrollContainer.querySelector(":scope > .handle-container > .handle");
