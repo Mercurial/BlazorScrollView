@@ -42,8 +42,8 @@ namespace BlazorScrollView
 
 		#region Protected Properties
 		protected bool IsInitialized { get; set; } = false;
-		protected bool ShouldScrollToBottomOnRerender { get; set; }
-        protected bool ShouldScrollToTopOnRerender { get; set; }
+        protected bool ShouldScrollToBottomOnRerender { get; set; } = false;
+        protected bool ShouldScrollToTopOnRerender { get; set; } = false;
         #endregion
 
         public ScrollViewViewModel() { }
@@ -56,17 +56,29 @@ namespace BlazorScrollView
                 await JSRuntime.InvokeVoidAsync("BlazorScrollView.ScrollViewInterop.InitializeScrollView", ScrollViewContainerRef, ScrollPadding, DotNetObjectReference.Create(this));
 				IsInitialized = true;
 			}
+
+            if (ShouldScrollToBottomOnRerender)
+            {
+                ShouldScrollToBottomOnRerender = false;
+                await JSRuntime.InvokeVoidAsync("BlazorScrollView.ScrollViewInterop.ScrollToBottom", ScrollViewContainerRef);
+            }
+
+            if (ShouldScrollToTopOnRerender)
+            {
+                ShouldScrollToTopOnRerender = false;
+                await JSRuntime.InvokeVoidAsync("BlazorScrollView.ScrollViewInterop.ScrollToTop", ScrollViewContainerRef);
+            }
             await base.OnAfterRenderAsync(firstRender);
         }
 
         public async void ScrollToBottom()
         {
-            await JSRuntime.InvokeVoidAsync("BlazorScrollView.ScrollViewInterop.ScrollToBottom", ScrollViewContainerRef);
+            ShouldScrollToBottomOnRerender = true;
         }
 
         public async void ScrollToTop()
         {
-            await JSRuntime.InvokeVoidAsync("BlazorScrollView.ScrollViewInterop.ScrollToTop", ScrollViewContainerRef);
+            ShouldScrollToTopOnRerender = true;
         }
 
 
