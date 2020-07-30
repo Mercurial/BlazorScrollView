@@ -95,7 +95,7 @@ var BlazorScrollView;
             }
         };
         ScrollViewInterop.HandleMouseDown = function (e) {
-            var _a;
+            var _a, _b;
             var target = e.target;
             if (target.classList.contains("handle")) {
                 e.preventDefault();
@@ -112,28 +112,67 @@ var BlazorScrollView;
                 ScrollViewInterop.CurrentHandleElement = target;
                 ScrollViewInterop.CurrentHandleY = e.clientY;
             }
+            if (target.classList.contains("handle-container-shadow")) {
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                e.stopPropagation();
+                var scrollContainer_1 = (_b = target.parentElement) === null || _b === void 0 ? void 0 : _b.parentElement;
+                if (!(scrollContainer_1 === null || scrollContainer_1 === void 0 ? void 0 : scrollContainer_1.classList.contains("active")))
+                    scrollContainer_1 === null || scrollContainer_1 === void 0 ? void 0 : scrollContainer_1.classList.add("active");
+                ScrollViewInterop.CurrentHandleElement = scrollContainer_1.querySelector(":scope > .handle-container > .handle");
+                ScrollViewInterop.ContainerClickedScroll(e, scrollContainer_1);
+                var intervalMultiplier_1 = parseFloat(window.getComputedStyle(scrollContainer_1, null).height) / scrollContainer_1.scrollHeight;
+                var baseInterval_1 = 100;
+                ScrollViewInterop.ContainerClickScrollTimeoutId = setTimeout(function () {
+                    ScrollViewInterop.ContainerClickScrollIntervalId = setInterval(ScrollViewInterop.ContainerClickedScroll, baseInterval_1 * intervalMultiplier_1, e, scrollContainer_1);
+                }, 500);
+            }
+        };
+        ScrollViewInterop.ContainerClickedScroll = function (e, scrollContainer) {
+            if (ScrollViewInterop.CurrentHandleElement) {
+                ScrollViewInterop.IsClickScrolling = true;
+                var handleClientRect = ScrollViewInterop.CurrentHandleElement.getBoundingClientRect();
+                var handleTopValue = handleClientRect.top;
+                var handleBottomValue = handleClientRect.bottom;
+                if (!(e.clientY > handleTopValue && e.clientY < handleBottomValue)) {
+                    var vars = ScrollViewInterop.ExtractVariables(scrollContainer);
+                    var displacement = vars[0] * vars[2] / vars[1];
+                    var dMultiplier = (e.clientY - handleTopValue) / Math.abs(e.clientY - handleTopValue);
+                    ScrollViewInterop.DoScroll(dMultiplier * displacement);
+                }
+                else {
+                    ScrollViewInterop.ClearScrollInterval();
+                }
+            }
+            else {
+                ScrollViewInterop.ClearScrollInterval();
+            }
+        };
+        ScrollViewInterop.ClearScrollInterval = function () {
+            if (ScrollViewInterop.ContainerClickScrollIntervalId) {
+                ScrollViewInterop.IsClickScrolling = false;
+                clearInterval(ScrollViewInterop.ContainerClickScrollIntervalId);
+            }
         };
         ScrollViewInterop.HandleMouseMove = function (e) {
             var _a;
-            if (ScrollViewInterop.CurrentHandleElement) {
+            if (ScrollViewInterop.CurrentHandleElement && !ScrollViewInterop.IsClickScrolling) {
                 e.preventDefault();
                 e.stopImmediatePropagation();
                 e.stopPropagation();
                 var scrollContainer = (_a = ScrollViewInterop.CurrentHandleElement.parentElement) === null || _a === void 0 ? void 0 : _a.parentElement;
                 if (!(scrollContainer === null || scrollContainer === void 0 ? void 0 : scrollContainer.classList.contains("active")))
                     scrollContainer === null || scrollContainer === void 0 ? void 0 : scrollContainer.classList.add("active");
-                var startY = ScrollViewInterop.CurrentHandleY;
-                var displacement = e.clientY - startY;
-                var decimalCorrection = (0.5 * displacement / Math.abs(displacement));
-                if ((!ScrollViewInterop.IsAtTop(scrollContainer) && displacement < 0) ||
+                var displacement = e.movementY;
+                var handle = ScrollViewInterop.CurrentHandleElement;
+                if ((parseFloat(window.getComputedStyle(handle, null).top) != 0 && displacement < 0) ||
                     (!ScrollViewInterop.IsAtBottom(scrollContainer) && displacement > 0)) {
-                    ScrollViewInterop.DoScroll(displacement, decimalCorrection);
-                    ScrollViewInterop.CurrentHandleY = e.clientY + decimalCorrection;
+                    ScrollViewInterop.DoScroll(displacement);
+                    ScrollViewInterop.CurrentHandleY = e.clientY;
                 }
             }
         };
-        ScrollViewInterop.DoScroll = function (displacement, decimalCorrection) {
-            if (decimalCorrection === void 0) { decimalCorrection = 0; }
+        ScrollViewInterop.DoScroll = function (displacement) {
             var handle = ScrollViewInterop.CurrentHandleElement;
             var handleContainer = handle.parentElement;
             var scrollContainer = handleContainer.parentElement;
@@ -141,7 +180,7 @@ var BlazorScrollView;
             scrollContainer.scrollTop += displacement * (vars[1] / vars[2]);
             var handleY = parseFloat(window.getComputedStyle(handle, null).top);
             var handleH = parseFloat(window.getComputedStyle(handle, null).height);
-            var newHandleY = handleY + displacement + decimalCorrection;
+            var newHandleY = handleY + displacement;
             if (newHandleY <= scrollContainer.ScrollPadding) {
                 newHandleY = scrollContainer.ScrollPadding;
                 ScrollViewInterop.CurrentScrollAccelerationMultiplier = 0;
@@ -156,6 +195,7 @@ var BlazorScrollView;
         };
         ScrollViewInterop.HandleMouseUp = function (e) {
             var _a, _b;
+            var target = e.target;
             if (ScrollViewInterop.CurrentHandleElement) {
                 e.preventDefault();
                 e.stopImmediatePropagation();
@@ -166,8 +206,11 @@ var BlazorScrollView;
                 if (scrollHandleContainer === null || scrollHandleContainer === void 0 ? void 0 : scrollHandleContainer.classList.contains("expanded"))
                     scrollHandleContainer === null || scrollHandleContainer === void 0 ? void 0 : scrollHandleContainer.classList.remove("expanded");
                 var scrollContainer = (_b = ScrollViewInterop.CurrentHandleElement.parentElement) === null || _b === void 0 ? void 0 : _b.parentElement;
-                if (scrollContainer === null || scrollContainer === void 0 ? void 0 : scrollContainer.classList.contains("active"))
+                if ((scrollContainer === null || scrollContainer === void 0 ? void 0 : scrollContainer.classList.contains("active")) && !(target.classList.contains("handle-container-shadow") || target.classList.contains("handle")))
                     scrollContainer === null || scrollContainer === void 0 ? void 0 : scrollContainer.classList.remove("active");
+                if (ScrollViewInterop.ContainerClickScrollTimeoutId)
+                    clearTimeout(ScrollViewInterop.ContainerClickScrollTimeoutId);
+                ScrollViewInterop.ClearScrollInterval();
                 ScrollViewInterop.CurrentHandleElement = null;
             }
         };
@@ -246,6 +289,7 @@ var BlazorScrollView;
         ScrollViewInterop.SmallHandleHeightCriterion = 10;
         ScrollViewInterop.ScrollHeightOffset = 5;
         ScrollViewInterop.ScrollPadding = 0;
+        ScrollViewInterop.IsClickScrolling = false;
         return ScrollViewInterop;
     }());
     BlazorScrollView.ScrollViewInterop = ScrollViewInterop;

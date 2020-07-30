@@ -38,10 +38,10 @@ namespace BlazorScrollView
 
         #region Public Properties
         public ElementReference ScrollViewContainerRef { get; set; }
-		#endregion
+        #endregion
 
-		#region Protected Properties
-		protected bool IsInitialized { get; set; } = false;
+        #region Protected Properties
+        protected bool IsInitialized { get; set; } = false;
         protected bool ShouldScrollToBottomOnRerender { get; set; } = false;
         protected bool ShouldScrollToTopOnRerender { get; set; } = false;
         #endregion
@@ -54,8 +54,8 @@ namespace BlazorScrollView
             if (firstRender)
             {
                 await JSRuntime.InvokeVoidAsync("BlazorScrollView.ScrollViewInterop.InitializeScrollView", ScrollViewContainerRef, ScrollPadding, DotNetObjectReference.Create(this));
-				IsInitialized = true;
-			}
+                IsInitialized = true;
+            }
 
             if (ShouldScrollToBottomOnRerender)
             {
@@ -106,7 +106,7 @@ namespace BlazorScrollView
 
         public void Dispose()
         {
-			JSRuntime.InvokeVoidAsync("BlazorScrollView.ScrollViewInterop.UnInitializeScrollView", ScrollViewContainerRef);
+            JSRuntime.InvokeVoidAsync("BlazorScrollView.ScrollViewInterop.UnInitializeScrollView", ScrollViewContainerRef);
         }
     }
 }
