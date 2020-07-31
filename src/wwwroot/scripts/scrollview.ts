@@ -147,6 +147,7 @@ namespace BlazorScrollView {
                 if (!scrollContainer?.classList.contains("active"))
                     scrollContainer?.classList.add("active");
 
+                ScrollViewInterop.IsClickScrolling = false;
                 ScrollViewInterop.CurrentHandleElement = target;
                 ScrollViewInterop.CurrentHandleY = e.clientY;
             }

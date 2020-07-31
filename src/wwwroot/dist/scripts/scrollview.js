@@ -109,6 +109,7 @@ var BlazorScrollView;
                 var scrollContainer = (_a = target.parentElement) === null || _a === void 0 ? void 0 : _a.parentElement;
                 if (!(scrollContainer === null || scrollContainer === void 0 ? void 0 : scrollContainer.classList.contains("active")))
                     scrollContainer === null || scrollContainer === void 0 ? void 0 : scrollContainer.classList.add("active");
+                ScrollViewInterop.IsClickScrolling = false;
                 ScrollViewInterop.CurrentHandleElement = target;
                 ScrollViewInterop.CurrentHandleY = e.clientY;
             }
