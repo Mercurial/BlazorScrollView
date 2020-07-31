@@ -11,15 +11,6 @@ namespace BlazorScrollView.Demo
         protected ScrollView ScrollView2 { get; set; }
         protected int NoOfItems { get; set; }
 
-        protected async override Task OnAfterRenderAsync(bool firstRender)
-        {
-            if (firstRender)
-            {
-
-            }
-            await base.OnAfterRenderAsync(firstRender);
-        }
-
         protected void ScrollToBottom(ScrollView scrollView)
         {
             scrollView.ScrollToBottom();

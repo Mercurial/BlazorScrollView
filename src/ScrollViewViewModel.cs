@@ -16,16 +16,24 @@ namespace BlazorScrollView
         #region Parameters
         [Parameter]
         public string Id { get; set; }
+
         [Parameter]
         public string Class { get; set; }
+
         [Parameter]
         public RenderFragment ChildContent { get; set; }
+
         [Parameter]
         public EventCallback OnScrollToBottom { get; set; }
+
         [Parameter]
         public EventCallback OnScrollToTop { get; set; }
+
         [Parameter]
         public EventCallback OnScroll { get; set; }
+
+        [Parameter]
+        public int ScrollPadding { get; set; } = 0;
         #endregion
 
         #region Public Properties
@@ -33,8 +41,9 @@ namespace BlazorScrollView
         #endregion
 
         #region Protected Properties
-        protected bool ShouldScrollToBottomOnRerender { get; set; }
-        protected bool ShouldScrollToTopOnRerender { get; set; }
+        protected bool IsInitialized { get; set; } = false;
+        protected bool ShouldScrollToBottomOnRerender { get; set; } = false;
+        protected bool ShouldScrollToTopOnRerender { get; set; } = false;
         #endregion
 
         public ScrollViewViewModel() { }
@@ -44,7 +53,8 @@ namespace BlazorScrollView
 
             if (firstRender)
             {
-                await JSRuntime.InvokeVoidAsync("BlazorScrollView.ScrollViewInterop.InitializeScrollView", ScrollViewContainerRef, DotNetObjectReference.Create(this));
+                await JSRuntime.InvokeVoidAsync("BlazorScrollView.ScrollViewInterop.InitializeScrollView", ScrollViewContainerRef, ScrollPadding, DotNetObjectReference.Create(this));
+                IsInitialized = true;
             }
 
             if (ShouldScrollToBottomOnRerender)
@@ -61,12 +71,12 @@ namespace BlazorScrollView
             await base.OnAfterRenderAsync(firstRender);
         }
 
-        public void ScrollToBottom()
+        public async void ScrollToBottom()
         {
             ShouldScrollToBottomOnRerender = true;
         }
 
-        public void ScrollToTop()
+        public async void ScrollToTop()
         {
             ShouldScrollToTopOnRerender = true;
         }
