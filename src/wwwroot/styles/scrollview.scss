@@ -12,6 +12,8 @@
     width: 10px;
     transition: opacity 500ms;
     opacity: 0;
+    box-sizing: border-box;
+    cursor: pointer;
 
     .handle {
       position: absolute;
