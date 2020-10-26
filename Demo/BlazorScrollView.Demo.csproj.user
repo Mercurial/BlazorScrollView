@@ -4,6 +4,6 @@
     <DebuggerFlavor>ProjectDebugger</DebuggerFlavor>
   </PropertyGroup>
   <PropertyGroup>
-    <ActiveDebugProfile>Demo</ActiveDebugProfile>
+    <ActiveDebugProfile>BlazorScrollView.Demo</ActiveDebugProfile>
   </PropertyGroup>
 </Project>

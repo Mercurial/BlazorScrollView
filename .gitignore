@@ -2,3 +2,7 @@
 **/obj/**
 **/node_modules/**
 **/.cache/**
+.vs/BlazorScrollView.Demo/DesignTimeBuild/.dtbcache.v2
+.vs/BlazorScrollView.Demo/v16/.suo
+Demo/BlazorScrollView.Demo.csproj.user
+src/wwwroot/tsconfig.tsbuildinfo
