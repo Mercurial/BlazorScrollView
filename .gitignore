@@ -6,3 +6,4 @@
 .vs/BlazorScrollView.Demo/v16/.suo
 Demo/BlazorScrollView.Demo.csproj.user
 src/wwwroot/tsconfig.tsbuildinfo
+**/.vs/**
